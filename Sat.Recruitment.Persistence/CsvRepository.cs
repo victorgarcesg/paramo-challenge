@@ -1,5 +1,7 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
+using Sat.Recruitment.Domain.Interfaces;
+using Sat.Recruitment.Domain.Models;
 using Sat.Recruitment.Domain.Repositories;
 using System;
 using System.Collections.Generic;
@@ -12,12 +14,12 @@ namespace Sat.Recruitment.Persistence
 {
     public class CsvRepository<T> : IGenericRepository<T> where T : class
     {
-        private readonly string _filePath;
+        private readonly FileConfiguration _fileConfiguration;
         private readonly CsvConfiguration _csvConfiguration;
 
-        public CsvRepository(string filePath)
+        public CsvRepository(FileConfiguration fileConfiguration)
         {
-            _filePath = filePath;
+            _fileConfiguration = fileConfiguration;
             _csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = true,
@@ -25,13 +27,13 @@ namespace Sat.Recruitment.Persistence
             };
         }
 
-        public T Create(T entity)
+        public IOperationResult<T> Create(T entity)
         {
             List<T> entities = ReadCsvFile();
             entities.Add(entity);
             WriteCsvFile(entities);
 
-            return entity;
+            return BasicOperationResult<T>.Ok(entity);
         }
 
         public T Find(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
@@ -59,14 +61,14 @@ namespace Sat.Recruitment.Persistence
 
         private List<T> ReadCsvFile()
         {
-            using var reader = new StreamReader(_filePath);
+            using var reader = new StreamReader(_fileConfiguration.FilePath);
             using var csv = new CsvReader(reader, _csvConfiguration);
             return csv.GetRecords<T>().ToList();
         }
 
         private void WriteCsvFile(List<T> entities)
         {
-            using var writer = new StreamWriter(_filePath);
+            using var writer = new StreamWriter(_fileConfiguration.FilePath);
             using var csv = new CsvWriter(writer, _csvConfiguration);
             csv.WriteRecords(entities);
         }

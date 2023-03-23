@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sat.Recruitment.Domain.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
@@ -14,8 +15,8 @@ namespace Sat.Recruitment.Domain.Repositories
         /// Stores a given <see cref="T"/>
         /// </summary>
         /// <param name="entity">An instance of <see cref="T"/></param>
-        /// <returns>An implementation of <see cref="T"/></returns>
-        T Create(T entity);
+        /// <returns>An implementation of <see cref="IOperationResult<T>"/></returns>
+        IOperationResult<T> Create(T entity);
 
         /// <summary>
         /// Gets an instance of <see cref="T"/> according with the given expression parameter.

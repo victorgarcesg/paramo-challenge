@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Sat.Recruitment.Api.Models;
+using Sat.Recruitment.Application.User;
+using Sat.Recruitment.Domain.Dtos;
+using Sat.Recruitment.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,12 +12,15 @@ namespace Sat.Recruitment.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public partial class UsersController : ControllerBase
+    public partial class UsersController : BaseController
     {
         private readonly List<User> _users = new List<User>();
 
         [HttpPost]
-        public async Task<Result> CreateUser(string name, string email, string address, string phone, string userType, string money)
+        public async Task<IOperationResult<UserDto>> Add(AddUserRequest request) => await Mediator.Send(request);
+
+        [HttpPost("lol")]
+        public async Task<Result> CreateUserX(string name, string email, string address, string phone, string userType, string money)
         {
             var errors = "";
 
