@@ -4,11 +4,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Sat.Recruitment.Application.User;
+using Sat.Recruitment.Application.Mappings;
+using Sat.Recruitment.Application.User.Add;
+using Sat.Recruitment.Domain.Contracts;
 using Sat.Recruitment.Domain.Dtos;
 using Sat.Recruitment.Domain.Interfaces;
 using Sat.Recruitment.Domain.Models;
 using Sat.Recruitment.Domain.Repositories;
+using Sat.Recruitment.Domain.Services;
 using Sat.Recruitment.Persistence.User;
 
 namespace Sat.Recruitment.Api
@@ -33,7 +36,10 @@ namespace Sat.Recruitment.Api
             services.AddScoped(metadata => fileMetadata);
 
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<IRequestHandler<AddUserRequest, IOperationResult<UserDto>>, AddUserHandler>();
+
+            services.AddAutoMapper(typeof(UserProfile));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

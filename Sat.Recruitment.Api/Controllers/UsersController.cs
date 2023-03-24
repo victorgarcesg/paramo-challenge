@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Sat.Recruitment.Api.Models;
-using Sat.Recruitment.Application.User;
+using Sat.Recruitment.Application.User.Add;
 using Sat.Recruitment.Domain.Dtos;
 using Sat.Recruitment.Domain.Interfaces;
 using System;
