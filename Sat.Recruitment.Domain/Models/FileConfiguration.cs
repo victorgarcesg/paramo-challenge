@@ -2,6 +2,6 @@
 {
     public sealed class FileConfiguration
     {
-        public string FilePath { get; set; }
+        public string Path { get; set; }
     }
 }

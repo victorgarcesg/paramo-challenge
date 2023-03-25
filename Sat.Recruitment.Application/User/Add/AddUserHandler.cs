@@ -27,7 +27,7 @@ namespace Sat.Recruitment.Application.User.Add
         public async Task<IOperationResult<UserDto>> Handle(AddUserRequest request, CancellationToken cancellationToken)
         {
             var validator = new AddUserRequestValidator();
-            var validationResult = validator.Validate(request);
+            FluentValidation.Results.ValidationResult validationResult = validator.Validate(request);
             if (!validationResult.IsValid)
             {
                 var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
@@ -35,7 +35,16 @@ namespace Sat.Recruitment.Application.User.Add
             }
 
             var user = _mapper.Map<Domain.Entities.User>(request);
-            var money = _userService.CalculateMoney(user);
+            decimal money = _userService.CalculateMoney(user);
+
+            bool exists = _userRepository.Exists(x => user.Email == x.Email || user.Phone == x.Phone || user.Address == x.Address || user.Name == x.Name);
+
+            if (exists)
+            {
+                await Task.FromResult(BasicOperationResult<UserDto>.Fail("The user is duplicated"));
+            }
+
+            _userRepository.Create(user);
 
             return await Task.FromResult(BasicOperationResult<UserDto>.Ok());
         }
