@@ -12,12 +12,20 @@ using System.Linq.Expressions;
 
 namespace Sat.Recruitment.Persistence.Repositories
 {
+    /// <summary>
+    /// Represents a generic repository that stores entities in a CSV file.
+    /// </summary>
+    /// <typeparam name="T">The entity type.</typeparam>
     public class CsvRepository<T> : IGenericRepository<T> where T : class
     {
         private readonly CsvConfiguration _csvConfiguration;
         private readonly string _fullPath;
         private List<T> _entities;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CsvRepository{T}"/> class.
+        /// </summary>
+        /// <param name="fileConfiguration">The configuration for the CSV file.</param>
         public CsvRepository(FileConfiguration fileConfiguration)
         {
             _fullPath = $"{Directory.GetCurrentDirectory()}{fileConfiguration.Path}";
@@ -29,6 +37,7 @@ namespace Sat.Recruitment.Persistence.Repositories
             };
         }
 
+        /// <inheritdoc/>
         public IOperationResult<T> Create(T entity)
         {
             _entities = ReadCsvFile();
@@ -37,24 +46,28 @@ namespace Sat.Recruitment.Persistence.Repositories
             return BasicOperationResult<T>.Ok(entity);
         }
 
+        /// <inheritdoc/>
         public T Find(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
         {
             _entities = ReadCsvFile();
             return _entities.AsQueryable().Where(predicate).FirstOrDefault();
         }
 
+        /// <inheritdoc/>
         public IEnumerable<T> FindAll(Expression<Func<T, bool>> predicate)
         {
             _entities = ReadCsvFile();
             return _entities.AsQueryable().Where(predicate).ToList();
         }
 
+        /// <inheritdoc/>
         public bool Exists(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
         {
             _entities = ReadCsvFile();
             return _entities.AsQueryable().Any(predicate);
         }
 
+        /// <inheritdoc/>
         public void Save()
         {
             using var writer = new StreamWriter(_fullPath);

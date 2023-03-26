@@ -36,7 +36,7 @@ namespace Sat.Recruitment.Domain.Models
         /// </summary>
         /// <returns>An instance of <see cref="BasicOperationResult{T}"/> successful</returns>
         public static BasicOperationResult<T> Ok()
-            => new BasicOperationResult<T>(new List<string>(), true, default(T));
+            => new BasicOperationResult<T>(new List<string>(), true, default);
 
         /// <summary>
         /// Creates an instance of <see cref="BasicOperationResult{T}"/> successfully
@@ -52,7 +52,7 @@ namespace Sat.Recruitment.Domain.Models
         /// <param name="message">An <see cref="string"/> value that represents a error message</param>
         /// <returns>An instance of <see cref="BasicOperationResult{T}"/> failed</returns>
         public static BasicOperationResult<T> Fail(string message)
-            => new BasicOperationResult<T>(new List<string> { message }, false, default(T));
+            => new BasicOperationResult<T>(new List<string> { message }, false, default);
 
         /// <summary>
         /// Creates an instance of <see cref="BasicOperationResult{T}"/> for fail case.
@@ -60,6 +60,6 @@ namespace Sat.Recruitment.Domain.Models
         /// <param name="messages">A set of <see cref="string"/> value that represents a error messages</param>
         /// <returns>An instance of <see cref="BasicOperationResult{T}"/> failed</returns>
         public static BasicOperationResult<T> Fail(IEnumerable<string> messages)
-            => new BasicOperationResult<T>(messages, false, default(T));
+            => new BasicOperationResult<T>(messages, false, default);
     }
 }

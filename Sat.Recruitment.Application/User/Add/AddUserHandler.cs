@@ -10,12 +10,21 @@ using System.Threading.Tasks;
 
 namespace Sat.Recruitment.Application.User.Add
 {
+    /// <summary>
+    /// Handles the logic for adding a new user.
+    /// </summary>
     public sealed class AddUserHandler : IRequestHandler<AddUserRequest, IOperationResult<UserDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AddUserHandler"/> class.
+        /// </summary>
+        /// <param name="unitOfWork">The unit of work instance to use.</param>
+        /// <param name="mapper">The mapper instance to use.</param>
+        /// <param name="userService">The user service instance to use.</param>
         public AddUserHandler(IUnitOfWork unitOfWork, IMapper mapper, IUserService userService)
         {
             _unitOfWork = unitOfWork;
@@ -23,6 +32,12 @@ namespace Sat.Recruitment.Application.User.Add
             _userService = userService;
         }
 
+        /// <summary>
+        /// Handles the request to add a new user.
+        /// </summary>
+        /// <param name="request">The request containing the user information to add.</param>
+        /// <param name="cancellationToken">The cancellation token to use.</param>
+        /// <returns>The operation result of the action.</returns>
         public async Task<IOperationResult<UserDto>> Handle(AddUserRequest request, CancellationToken cancellationToken)
         {
             var validator = new AddUserRequestValidator();

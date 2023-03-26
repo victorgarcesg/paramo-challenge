@@ -3,8 +3,12 @@ using Sat.Recruitment.Domain.Entities;
 
 namespace Sat.Recruitment.Domain.Services
 {
+    /// <summary>
+    /// Implementation of the IUserService interface that calculates the money based on the user type and money value
+    /// </summary>
     public sealed class UserService : IUserService
     {
+        /// <inheritdoc/>
         public decimal CalculateMoney(User user) => user.UserType switch
         {
             "Normal" => CalculateNormalMoney(user),

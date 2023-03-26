@@ -5,10 +5,19 @@ using System.Collections.Generic;
 
 namespace Sat.Recruitment.Test.Infrastructure
 {
+    /// <summary>
+    /// A mock implementation of the <see cref="IUnitOfWork"/> interface, used for testing purposes.
+    /// </summary>
     public class MockUnitOfWork : IUnitOfWork
     {
+        /// <summary>
+        /// Gets the <see cref="IGenericRepository{T}"/> for the <see cref="User"/> entity.
+        /// </summary>
         public IGenericRepository<User> Users { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MockUnitOfWork"/> class.
+        /// </summary>
         public MockUnitOfWork()
         {
             var users = new List<User>
@@ -22,6 +31,9 @@ namespace Sat.Recruitment.Test.Infrastructure
             Users = new MockGenericRepository<User>(users);
         }
 
+        /// <summary>
+        /// Saves the changes made to the repositories in the unit of work.
+        /// </summary>
         public void SaveChanges()
         {
             // do nothing
