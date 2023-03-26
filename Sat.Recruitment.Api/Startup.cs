@@ -32,15 +32,24 @@ namespace Sat.Recruitment.Api
             services.AddSwaggerGen();
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Startup).Assembly));
 
-            FileConfiguration fileMetadata = BuildFileConfiguration();
-            services.AddScoped(metadata => fileMetadata);
+            AddConfigurations(services);
+            AddServices(services);
 
+            services.AddAutoMapper(typeof(UserProfile));
+        }
+
+        private static void AddServices(IServiceCollection services)
+        {
             services.AddScoped<IUserService, UserService>();
             services.AddTransient<IRequestHandler<AddUserRequest, IOperationResult<UserDto>>, AddUserHandler>();
             services.AddScoped<IUnitOfWork, CsvUnitOfWork>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(CsvRepository<>));
+        }
 
-            services.AddAutoMapper(typeof(UserProfile));
+        private void AddConfigurations(IServiceCollection services)
+        {
+            FileConfiguration fileMetadata = BuildFileConfiguration();
+            services.AddScoped(metadata => fileMetadata);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
