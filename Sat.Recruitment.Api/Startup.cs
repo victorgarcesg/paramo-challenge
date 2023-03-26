@@ -36,7 +36,7 @@ namespace Sat.Recruitment.Api
             services.AddScoped(metadata => fileMetadata);
 
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IRequestHandler<AddUserRequest, IOperationResult<UserDto>>, AddUserHandler>();
+            services.AddTransient<IRequestHandler<AddUserRequest, IOperationResult<UserDto>>, AddUserHandler>();
             services.AddScoped<IUnitOfWork, CsvUnitOfWork>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(CsvRepository<>));
 
