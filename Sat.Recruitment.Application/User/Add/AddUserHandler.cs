@@ -40,7 +40,7 @@ namespace Sat.Recruitment.Application.User.Add
 
             if (exists)
             {
-                await Task.FromResult(BasicOperationResult<UserDto>.Fail("The user is duplicated"));
+                return await Task.FromResult(BasicOperationResult<UserDto>.Fail("The user is duplicated"));
             }
 
             _unitOfWork.Users.Create(user);

@@ -6,10 +6,9 @@ using Sat.Recruitment.Domain.Contracts;
 using Sat.Recruitment.Domain.Dtos;
 using Sat.Recruitment.Domain.Models;
 using Sat.Recruitment.Test.Infrastructure;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -18,38 +17,36 @@ namespace Sat.Recruitment.Test
     public class AddUserHandlerTests
     {
         private readonly IMapper _mapper;
-        private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+        private readonly IUnitOfWork _unitOfWorkMock;
         private readonly Mock<IUserService> _userServiceMock;
         private readonly AddUserHandler _handler;
 
         public AddUserHandlerTests()
         {
             var fixture = new TestFixture();
-            _unitOfWorkMock = new Mock<IUnitOfWork>();
+            _unitOfWorkMock = fixture.UnitOfWork;
             _mapper = fixture.Mapper;
             _userServiceMock = new Mock<IUserService>();
-            _handler = new AddUserHandler(_unitOfWorkMock.Object, _mapper, _userServiceMock.Object);
+            _handler = new AddUserHandler(_unitOfWorkMock, _mapper, _userServiceMock.Object);
         }
 
-        [Fact]
-        public async Task Handle_ValidRequest_ReturnsSuccessResult()
+        public static IEnumerable<object[]> AddUserRequestTestCases
+        {
+            get
+            {
+                yield return new object[] { new AddUserRequest { Name = "Jane Doe", Email = "janedoe@example.com", Address = "456 Elm St", Phone = "+1 555-555-1313", UserType = "User" }};
+                yield return new object[] { new AddUserRequest { Name = "Bob Smith", Email = "bobsmith@example.com", Address = "789 Oak Ave", Phone = "+1 555-555-1414", UserType = "Admin" }};
+                yield return new object[] { new AddUserRequest { Name = "Mary Johnson", Email = "maryjohnson@example.com", Address = "222 Cherry Ln", Phone = "+1 555-555-1515", UserType = "User" }};
+                yield return new object[] { new AddUserRequest { Name = "Mike Brown", Email = "mikebrown@example.com", Address = "333 Maple Rd", Phone = "+1 555-555-1616", UserType = "Admin" }};
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(AddUserRequestTestCases))]
+        public async Task Add_ValidRequest_ReturnsSuccessResult(AddUserRequest request)
         {
             // Arrange
-            var request = new AddUserRequest
-            {
-                Name = "John Doe",
-                Email = "john.doe@example.com",
-                Address = "123 Main St",
-                Phone = "1234567890",
-                UserType = "Normal",
-                Money = "100"
-            };
-            var validationResult = new ValidationResult();
-            var user = _mapper.Map<Domain.Entities.User>(request);
             var expectedResult = BasicOperationResult<UserDto>.Ok();
-
-            _userServiceMock.Setup(m => m.CalculateMoney(user)).Returns(100);
-            _unitOfWorkMock.Setup(m => m.Users.Exists(It.IsAny<Expression<Func<Domain.Entities.User, bool>>>())).Returns(false);
 
             // Act
             var result = await _handler.Handle(request, default);
@@ -59,7 +56,7 @@ namespace Sat.Recruitment.Test
         }
 
         [Fact]
-        public async Task Handle_InvalidRequest_ReturnsErrorResult()
+        public async Task Add_InvalidRequest_ReturnsErrorResult()
         {
             // Arrange
             var request = new AddUserRequest();
@@ -79,6 +76,29 @@ namespace Sat.Recruitment.Test
             // Assert
             Assert.False(result.Success);
             Assert.Equal(expectedErrors, result.Messages);
+        }
+
+        [Fact]
+        public async Task Add_DuplicatedUser_ReturnsErrorResult()
+        {
+            // Arrange
+            var request = new AddUserRequest
+            {
+                Name = "Agustina",
+                Email = "Agustina@gmail.com",
+                Address = "Av. Juan G",
+                Phone = "+349 1122354215",
+                UserType = "Normal",
+                Money = "124"
+            };
+            var expectedResult = BasicOperationResult<UserDto>.Fail("The user is duplicated");
+
+            // Act
+            var result = await _handler.Handle(request, CancellationToken.None);
+
+            // Assert
+            Assert.False(result.Success);
+            Assert.Equal(expectedResult.Messages, result.Messages);
         }
     }
 }
