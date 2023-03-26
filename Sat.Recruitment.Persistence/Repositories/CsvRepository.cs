@@ -10,12 +10,13 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Sat.Recruitment.Persistence
+namespace Sat.Recruitment.Persistence.Repositories
 {
     public class CsvRepository<T> : IGenericRepository<T> where T : class
     {
         private readonly CsvConfiguration _csvConfiguration;
         private readonly string _fullPath;
+        private List<T> _entities;
 
         public CsvRepository(FileConfiguration fileConfiguration)
         {
@@ -30,34 +31,35 @@ namespace Sat.Recruitment.Persistence
 
         public IOperationResult<T> Create(T entity)
         {
-            List<T> entities = ReadCsvFile();
-            entities.Add(entity);
-            WriteCsvFile(entities);
+            _entities = ReadCsvFile();
+            _entities.Add(entity);
 
             return BasicOperationResult<T>.Ok(entity);
         }
 
         public T Find(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
         {
-            List<T> entities = ReadCsvFile();
-            return entities.AsQueryable().Where(predicate).FirstOrDefault();
+            _entities = ReadCsvFile();
+            return _entities.AsQueryable().Where(predicate).FirstOrDefault();
         }
 
         public IEnumerable<T> FindAll(Expression<Func<T, bool>> predicate)
         {
-            List<T> entities = ReadCsvFile();
-            return entities.AsQueryable().Where(predicate).ToList();
+            _entities = ReadCsvFile();
+            return _entities.AsQueryable().Where(predicate).ToList();
         }
 
         public bool Exists(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
         {
-            List<T> entities = ReadCsvFile();
-            return entities.AsQueryable().Any(predicate);
+            _entities = ReadCsvFile();
+            return _entities.AsQueryable().Any(predicate);
         }
 
         public void Save()
         {
-            // No implementation needed for CSV
+            using var writer = new StreamWriter(_fullPath);
+            using var csv = new CsvWriter(writer, _csvConfiguration);
+            csv.WriteRecords(_entities);
         }
 
         private List<T> ReadCsvFile()
@@ -65,13 +67,6 @@ namespace Sat.Recruitment.Persistence
             using var reader = new StreamReader(_fullPath);
             using var csv = new CsvReader(reader, _csvConfiguration);
             return csv.GetRecords<T>().ToList();
-        }
-
-        private void WriteCsvFile(List<T> entities)
-        {
-            using var writer = new StreamWriter(_fullPath);
-            using var csv = new CsvWriter(writer, _csvConfiguration);
-            csv.WriteRecords(entities);
         }
     }
 }

@@ -12,7 +12,7 @@ using Sat.Recruitment.Domain.Interfaces;
 using Sat.Recruitment.Domain.Models;
 using Sat.Recruitment.Domain.Repositories;
 using Sat.Recruitment.Domain.Services;
-using Sat.Recruitment.Persistence.User;
+using Sat.Recruitment.Persistence.Repositories;
 
 namespace Sat.Recruitment.Api
 {
@@ -35,9 +35,10 @@ namespace Sat.Recruitment.Api
             FileConfiguration fileMetadata = BuildFileConfiguration();
             services.AddScoped(metadata => fileMetadata);
 
-            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IRequestHandler<AddUserRequest, IOperationResult<UserDto>>, AddUserHandler>();
+            services.AddScoped<IUnitOfWork, CsvUnitOfWork>();
+            services.AddScoped(typeof(IGenericRepository<>), typeof(CsvRepository<>));
 
             services.AddAutoMapper(typeof(UserProfile));
         }
