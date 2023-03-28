@@ -37,6 +37,6 @@ namespace Sat.Recruitment.Application.User.Add
         /// <summary>
         /// Represents the money of the user
         /// </summary>
-        public string Money { get; set; }
+        public decimal Money { get; set; }
     }
 }

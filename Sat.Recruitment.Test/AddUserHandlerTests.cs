@@ -34,10 +34,10 @@ namespace Sat.Recruitment.Test
         {
             get
             {
-                yield return new object[] { new AddUserRequest { Name = "Jane Doe", Email = "janedoe@example.com", Address = "456 Elm St", Phone = "+1 555-555-1313", UserType = "User" }};
-                yield return new object[] { new AddUserRequest { Name = "Bob Smith", Email = "bobsmith@example.com", Address = "789 Oak Ave", Phone = "+1 555-555-1414", UserType = "Admin" }};
-                yield return new object[] { new AddUserRequest { Name = "Mary Johnson", Email = "maryjohnson@example.com", Address = "222 Cherry Ln", Phone = "+1 555-555-1515", UserType = "User" }};
-                yield return new object[] { new AddUserRequest { Name = "Mike Brown", Email = "mikebrown@example.com", Address = "333 Maple Rd", Phone = "+1 555-555-1616", UserType = "Admin" }};
+                yield return new object[] { new AddUserRequest { Name = "Jane Doe", Email = "janedoe@example.com", Address = "456 Elm St", Phone = "+1 555-555-1313", UserType = "Normal", Money = 100 }};
+                yield return new object[] { new AddUserRequest { Name = "Bob Smith", Email = "bobsmith@example.com", Address = "789 Oak Ave", Phone = "+1 555-555-1414", UserType = "SuperUser", Money = 50 }};
+                yield return new object[] { new AddUserRequest { Name = "Mary Johnson", Email = "maryjohnson@example.com", Address = "222 Cherry Ln", Phone = "+1 555-555-1515", UserType = "Premium", Money = 75 }};
+                yield return new object[] { new AddUserRequest { Name = "Mike Brown", Email = "mikebrown@example.com", Address = "333 Maple Rd", Phone = "+1 555-555-1616", UserType = "Normal", Money = 85 }};
             }
         }
 
@@ -66,7 +66,8 @@ namespace Sat.Recruitment.Test
                 new ValidationFailure("Email", "'Email' must not be empty."),
                 new ValidationFailure("Address", "'Address' must not be empty."),
                 new ValidationFailure("Phone", "'Phone' must not be empty."),
-                new ValidationFailure("UserType", "'User Type' must not be empty.")
+                new ValidationFailure("Money", "'Money' must be greater than '0'."),
+                new ValidationFailure("UserType", "User type must be Normal, SuperUser, or Premium.")
             });
             var expectedErrors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
 
@@ -89,7 +90,7 @@ namespace Sat.Recruitment.Test
                 Address = "Av. Juan G",
                 Phone = "+349 1122354215",
                 UserType = "Normal",
-                Money = "124"
+                Money = 124
             };
             var expectedResult = BasicOperationResult<UserDto>.Fail("The user is duplicated");
 

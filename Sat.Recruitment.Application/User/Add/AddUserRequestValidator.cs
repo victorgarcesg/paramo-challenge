@@ -16,7 +16,10 @@ namespace Sat.Recruitment.Application.User.Add
             RuleFor(request => request.Email).Email();
             RuleFor(request => request.Address).NotEmpty();
             RuleFor(request => request.Phone).Phone();
-            RuleFor(request => request.UserType).NotEmpty();
+            RuleFor(request => request.Money).GreaterThan(0);
+            RuleFor(x => x.UserType)
+                .Must(x => x == "Normal" || x == "SuperUser" || x == "Premium")
+                .WithMessage("User type must be Normal, SuperUser, or Premium.");
         }
     }
 }
